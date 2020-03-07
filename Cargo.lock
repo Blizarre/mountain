@@ -25,9 +25,20 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "eb147597cdf94ed43ab7a9038716637d2d1bf2bc571da995d0028dec06bd3018"
 
 [[package]]
+name = "lodepng"
+version = "2.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "40ed9859b15e009b494528f32ad054c5baf67afabf3c05d27973ea151563d430"
+dependencies = [
+ "libc 0.2.67",
+ "rgb",
+]
+
+[[package]]
 name = "mountain"
 version = "0.1.0"
 dependencies = [
+ "lodepng",
  "sdl",
 ]
 
@@ -155,6 +166,12 @@ checksum = "678054eb77286b51581ba43620cc911abf02758c91f93f479767aed0f90458b2"
 dependencies = [
  "rand_core 0.3.1",
 ]
+
+[[package]]
+name = "rgb"
+version = "0.8.16"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5ec4ab2cf0b27e111e266e161cf7f9efd20125a161190da1c0945c4a4408fef3"
 
 [[package]]
 name = "rustc-serialize"

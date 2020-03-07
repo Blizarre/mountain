@@ -1,6 +1,8 @@
 use std::thread::sleep;
 use std::time::Duration;
 
+use lodepng;
+use lodepng::{Bitmap, Grey};
 use sdl;
 use sdl::{get_ticks, InitFlag, quit};
 use sdl::event::{Event, poll_event};
@@ -17,7 +19,19 @@ fn get_pitch(surface: &Surface) -> u16 {
 mod others {
     #[link(name = "SDL")]
     #[link(name = "asound")]
-    extern {}
+    extern "C" {}
+}
+
+type Image = Bitmap<Grey<u8>>;
+
+fn load_map(path: &str) -> Result<Image, String> {
+    match lodepng::Decoder::new().decode_file(path) {
+        Err(e) => Err(format!("Error opening the file {} ({})", path, e.0)),
+        Ok(image) => match image {
+            lodepng::Image::Grey(im) => Ok(im),
+            _ => Err("Not the right format, expect grayscale".to_string()),
+        },
+    }
 }
 
 fn main() {
@@ -29,12 +43,15 @@ fn main() {
         32,
         [SurfaceFlag::SWSurface].as_ref(),
         [VideoFlag::Fullscreen].as_ref(),
-    ).unwrap();
+    )
+        .unwrap();
     set_cursor_visible(false);
 
     let mut request_exit = false;
     let mut frame_ctr = stats::Stats::default();
     let mut draw_ctr = stats::Stats::default();
+
+    let map = load_map("map.png").expect("Cannot open the map");
 
     while !request_exit {
         let tick_start_frame = get_ticks();
@@ -47,16 +64,15 @@ fn main() {
                 Event::Quit => request_exit = true,
                 Event::Key(k, true, _, _) => {
                     println!("keypress: {:?}", k as usize);
-                    match k {
-                        Escape => request_exit = true,
-                        _ => ()
+                    if let Escape = k {
+                        request_exit = true
                     }
                 }
-                _ => ()
+                _ => (),
             }
         }
         let tick_start_draw = get_ticks();
-        draw(&screen);
+        draw(&screen, &map);
         draw_ctr.add(get_ticks() - tick_start_draw);
 
         screen.flip();
@@ -72,18 +88,21 @@ fn main() {
     quit();
 }
 
+fn set_color(image: &mut [u8], i: usize, j: usize, pitch: usize, value: u8) {
+    let pixel_offset = i * 4 + j * pitch;
+    image[pixel_offset] = value;
+    image[pixel_offset + 1] = value;
+    image[pixel_offset + 2] = value;
+}
 
-fn draw(screen: &Surface) {
+fn draw(screen: &Surface, _map: &Image) {
     screen.with_lock(|f| {
         let (w, h) = screen.get_size();
         let pitch = get_pitch(&screen) as usize;
 
         for j in 0..h as usize {
             for i in 0..w as usize {
-                f[i * 4 + j * pitch + 0] = (j % 255) as u8;
-                f[i * 4 + j * pitch + 1] = (i % 255) as u8;
-                f[i * 4 + j * pitch + 2] = ((i + j) % 255) as u8;
-                f[i * 4 + j * pitch + 3] = 0;
+                set_color(f, i, j, pitch, (i + j) as u8);
             }
         }
         true

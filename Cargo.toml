@@ -8,3 +8,4 @@ edition = "2018"
 
 [dependencies]
 sdl = { git = "git://git@github.com/Blizarre/rust-sdl.git" }
+lodepng = "2.5.0"

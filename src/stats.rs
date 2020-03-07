@@ -19,6 +19,12 @@ impl Stats {
 
 impl Display for Stats {
     fn fmt(&self, fmt: &mut Formatter) -> fmt::Result {
-        write!(fmt, "time/events: {:.1} ms, # of events: {}, total time: {} ms", self.avg(), self.num_events, self.total_time)
+        write!(
+            fmt,
+            "time/events: {:.1} ms, # of events: {}, total time: {} ms",
+            self.avg(),
+            self.num_events,
+            self.total_time
+        )
     }
 }
