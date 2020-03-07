@@ -5,6 +5,7 @@ use sdl;
 use sdl::{get_ticks, InitFlag, quit};
 use sdl::event::{Event, poll_event};
 use sdl::event::Key::Escape;
+use sdl::mouse::set_cursor_visible;
 use sdl::video::{set_video_mode, Surface, SurfaceFlag, VideoFlag};
 
 mod stats;
@@ -29,13 +30,14 @@ fn main() {
         [SurfaceFlag::SWSurface].as_ref(),
         [VideoFlag::Fullscreen].as_ref(),
     ).unwrap();
-
+    set_cursor_visible(false);
 
     let mut request_exit = false;
     let mut frame_ctr = stats::Stats::default();
+    let mut draw_ctr = stats::Stats::default();
 
     while !request_exit {
-        let tick = get_ticks();
+        let tick_start_frame = get_ticks();
 
         // Process the events
         loop {
@@ -53,9 +55,12 @@ fn main() {
                 _ => ()
             }
         }
+        let tick_start_draw = get_ticks();
         draw(&screen);
+        draw_ctr.add(get_ticks() - tick_start_draw);
+
         screen.flip();
-        let ms_elapsed = (get_ticks() - tick) as u32;
+        let ms_elapsed = get_ticks() - tick_start_frame;
         frame_ctr.add(ms_elapsed);
 
         if ms_elapsed < 16 {
@@ -63,6 +68,7 @@ fn main() {
         }
     }
     println!("Frame stats: {}", frame_ctr);
+    println!("Draw stats: {}", draw_ctr);
     quit();
 }
 

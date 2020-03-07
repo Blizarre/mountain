@@ -4,11 +4,11 @@ use std::fmt::{Display, Formatter};
 #[derive(Default)]
 pub struct Stats {
     num_events: u32,
-    total_time: u32,
+    total_time: usize,
 }
 
 impl Stats {
-    pub fn add(self: &mut Self, time: u32) {
+    pub fn add(self: &mut Self, time: usize) {
         self.num_events += 1;
         self.total_time += time;
     }
