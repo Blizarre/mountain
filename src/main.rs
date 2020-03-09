@@ -9,7 +9,7 @@ use sdl::event::Key::Escape;
 use sdl::event::{poll_event, Event, Key, MouseState};
 use sdl::mouse::set_cursor_visible;
 use sdl::video::{set_video_mode, Surface, SurfaceFlag, VideoFlag};
-use sdl::{get_ticks, quit, InitFlag};
+use sdl::{quit, InitFlag};
 use std::cmp::{max, min};
 
 mod stats;
@@ -124,7 +124,7 @@ fn main() {
     };
 
     while !request_exit {
-        let tick_start_frame = get_ticks();
+        frame_ctr.start_event();
 
         let (should_exit, cos_angle, sin_angle) = process_events(&mut camera);
 
@@ -133,13 +133,13 @@ fn main() {
         }
 
         screen.clear();
-        let tick_start_draw = get_ticks();
-        draw(&screen, &map, &texture, &camera, sin_angle, cos_angle);
-        draw_ctr.add(get_ticks() - tick_start_draw);
+
+        draw_ctr.time(|| {
+            draw(&screen, &map, &texture, &camera, sin_angle, cos_angle);
+        });
 
         screen.flip();
-        let ms_elapsed = get_ticks() - tick_start_frame;
-        frame_ctr.add(ms_elapsed);
+        let ms_elapsed = frame_ctr.end_event();
 
         if ms_elapsed < 16 {
             sleep(Duration::from_millis(16 - ms_elapsed as u64));
