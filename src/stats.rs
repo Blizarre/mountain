@@ -21,7 +21,7 @@ impl Default for Stats {
 impl Stats {
     /// Mark the end of the event and return the time elapsed during this event
     pub fn end_event(self: &mut Self) -> u32 {
-        let elapsed = Instant::now() - self.last_tick;
+        let elapsed = self.last_tick.elapsed();
         self.num_events += 1;
         self.total_time += elapsed;
         elapsed.subsec_millis()
@@ -37,7 +37,7 @@ impl Stats {
     {
         let before = Instant::now();
         f();
-        self.total_time += Instant::now().duration_since(before);
+        self.total_time += before.elapsed();
         self.num_events += 1;
     }
 

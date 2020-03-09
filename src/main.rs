@@ -114,6 +114,7 @@ fn main() {
         });
 
         screen.flip();
+
         let ms_elapsed = frame_ctr.end_event();
 
         if ms_elapsed < 16 {
