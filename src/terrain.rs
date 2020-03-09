@@ -39,7 +39,7 @@ impl HeightMap {
 }
 
 impl Texture {
-    pub(crate) fn get(self: &Self, i: i32, j: i32) -> RGBA8 {
+    pub fn get(self: &Self, i: i32, j: i32) -> RGBA8 {
         let i = i.rem_euclid(self.width());
         let j = j.rem_euclid(self.height());
         self.0.buffer[(i + self.width() * j) as usize]

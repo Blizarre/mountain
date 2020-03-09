@@ -1,23 +1,26 @@
 use core::fmt;
 use std::fmt::{Display, Formatter};
-use std::time::{Instant, Duration};
+use std::time::{Duration, Instant};
 
 pub struct Stats {
     num_events: u32,
     total_time: Duration,
-    last_tick: Instant
+    last_tick: Instant,
 }
 
 impl Default for Stats {
     fn default() -> Self {
-        Self{num_events: 0, total_time: Duration::default(), last_tick: Instant::now()}
+        Self {
+            num_events: 0,
+            total_time: Duration::default(),
+            last_tick: Instant::now(),
+        }
     }
 }
 
 impl Stats {
-
     /// Mark the end of the event and return the time elapsed during this event
-    pub fn end_event(self: &mut Self) -> u32{
+    pub fn end_event(self: &mut Self) -> u32 {
         let elapsed = Instant::now() - self.last_tick;
         self.num_events += 1;
         self.total_time += elapsed;
@@ -28,7 +31,10 @@ impl Stats {
         self.last_tick = Instant::now();
     }
 
-    pub fn time<F>(self: &mut Self, mut f: F) where F: FnMut() {
+    pub fn time<F>(self: &mut Self, mut f: F)
+    where
+        F: FnMut(),
+    {
         let before = Instant::now();
         f();
         self.total_time += Instant::now().duration_since(before);
