@@ -1,6 +1,6 @@
 # Mountain
 
-A simple implementation of the voxel engine used in the [comanche vide games](https://en.wikipedia.org/wiki/Comanche_(video_game_series) (also called VoxelSpace).
+A simple implementation of the voxel engine used in the [comanche video games](https://en.wikipedia.org/wiki/Comanche_(video_game_series), also called VoxelSpace.
 
 This was heavily inspired by [s-make's github project VoxelSpace](https://github.com/s-macke/VoxelSpace).
 
@@ -17,5 +17,12 @@ The texture is way to large for the pocketGo, but the goal is to push it to its 
 ![High-resolution screenshot (from the laptop)](screenshots/hires.png)
 
 Todo:
-- Use a smaller scale image for the heightmap
-- improve performance
+- improve performance:
+  - improve the logic behind the repeating map, potentially making power of two maps mandatory
+  - remove `/` and `*` from the inner loop
+  - Use a smaller scale image for the heightmap
+- add texture interpolation for the ground
+- fix bugs
+
+
+I use SDL1 since SDL2 is not supported by the PocketGo. I made a fork of the [brson/rust-sdl](https://github.com/brson/rust-sdl) crate to add ARM support.
