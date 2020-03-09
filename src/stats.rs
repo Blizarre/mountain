@@ -42,7 +42,7 @@ impl Stats {
     }
 
     pub fn avg_micro(self: &Self) -> f32 {
-        self.total_time.subsec_micros() as f32 / self.num_events as f32
+        self.total_time.as_micros() as f32 / self.num_events as f32
     }
 }
 
@@ -53,7 +53,7 @@ impl Display for Stats {
             "time/events: {:.2} ms, # of events: {}, total time: {} ms",
             self.avg_micro() / 1000.0,
             self.num_events,
-            self.total_time.subsec_millis() / 1000
+            self.total_time.as_millis() / 1000
         )
     }
 }
