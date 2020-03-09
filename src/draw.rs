@@ -45,7 +45,7 @@ pub fn draw(
 
     let fixed_horizon = camera.horizon << fixed_precision;
     let scale_height_shift = 7;
-    let distance_max = 300;
+    let distance_max = 500;
 
     screen.with_lock(|screen_pixels| {
         let mut max_height = Vec::new();

@@ -5,7 +5,7 @@ use crate::terrain::{HeightMap, Texture};
 use sdl::event::Key::Escape;
 use sdl::event::{poll_event, Event, Key, MouseState};
 use sdl::mouse::set_cursor_visible;
-use sdl::video::{set_video_mode, SurfaceFlag, VideoFlag};
+use sdl::video::{set_video_mode, SurfaceFlag};
 use sdl::{quit, InitFlag};
 mod vector;
 use vector::Vector2;
@@ -84,21 +84,16 @@ fn main() {
     };
 
     sdl::init([InitFlag::Video].as_ref());
-    let screen = set_video_mode(
-        1024,
-        768,
-        32,
-        [SurfaceFlag::SWSurface].as_ref(),
-        [VideoFlag::Fullscreen].as_ref(),
-    )
-    .unwrap();
+
+    let screen =
+        set_video_mode(320, 240, 32, [SurfaceFlag::SWSurface].as_ref(), [].as_ref()).unwrap();
     set_cursor_visible(false);
 
     let mut request_exit = false;
     let mut frame_ctr = stats::Stats::default();
     let mut draw_ctr = stats::Stats::default();
 
-    let mut camera = Camera::new(240., 277., 150, 120);
+    let mut camera = Camera::new(500., 400., 200, 120);
 
     while !request_exit {
         frame_ctr.start_event();
