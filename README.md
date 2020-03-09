@@ -1,6 +1,6 @@
 # Mountain
 
-A simple implementation of the voxel engine used in the [comanche video games](https://en.wikipedia.org/wiki/Comanche_(video_game_series), also called VoxelSpace.
+A simple implementation of the voxel engine used in the [comanche video games](https://en.wikipedia.org/wiki/Comanche_(video_game_series)), also called VoxelSpace.
 
 This was heavily inspired by [s-make's github project VoxelSpace](https://github.com/s-macke/VoxelSpace).
 
