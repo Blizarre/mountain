@@ -36,7 +36,7 @@ jobs:
           rustup default stable
 
       - name: Install missing packages
-        run: apt install libsdl1.2-dev
+        run: sudo apt-get install libsdl1.2-dev
 
       - name: Build
         run: cargo build
