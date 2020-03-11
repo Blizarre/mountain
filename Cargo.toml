@@ -10,3 +10,6 @@ edition = "2018"
 sdl = { git = "git://git@github.com/Blizarre/rust-sdl.git" }
 lodepng = "2.5.0"
 rgb = "0.8.16"
+
+[profile.release]
+lto = true
