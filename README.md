@@ -1,3 +1,5 @@
+![CI Status badge](https://github.com/blizarre/mountain/workflows/CI/badge.svg)
+
 # Mountain
 
 A simple implementation of the voxel engine used in the [comanche video games](https://en.wikipedia.org/wiki/Comanche_(video_game_series)), also called VoxelSpace.
