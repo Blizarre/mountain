@@ -7,13 +7,17 @@ use sdl::event::{poll_event, Event, Key, MouseState};
 use sdl::mouse::set_cursor_visible;
 use sdl::video::{set_video_mode, SurfaceFlag};
 use sdl::{quit, InitFlag};
+
 mod vector;
+
 use vector::Vector2;
 
 mod camera;
 mod draw;
+mod fixed_int;
 mod stats;
 mod terrain;
+
 use camera::Camera;
 
 mod others {

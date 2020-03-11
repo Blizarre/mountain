@@ -1,3 +1,5 @@
+use crate::fixed_int::FixedInt10;
+use crate::vector::Vector2;
 use crate::{terrain, Camera};
 use rgb::RGBA8;
 use sdl::video::Surface;
@@ -40,10 +42,7 @@ pub fn draw(
 
     let pitch = get_pitch(&screen) as usize;
 
-    let fixed_precision = 11;
-    let precision_multipier = 2048.;
-
-    let fixed_horizon = camera.horizon << fixed_precision;
+    let horizon = FixedInt10::from(camera.horizon);
     let scale_height_shift = 7;
     let distance_max = 500;
 
@@ -53,50 +52,40 @@ pub fn draw(
 
         for z in 1..distance_max {
             let zf = z as f32;
-            let left = (
-                (-camera.cos_angle * zf - camera.sin_angle * zf) + camera.x,
-                (camera.sin_angle * zf - camera.cos_angle * zf) + camera.y,
-            );
+            let left = Vector2 {
+                x: FixedInt10::from((-camera.cos_angle * zf - camera.sin_angle * zf) + camera.x),
+                y: FixedInt10::from((camera.sin_angle * zf - camera.cos_angle * zf) + camera.y),
+            };
 
-            let right = (
-                (camera.cos_angle * zf - camera.sin_angle * zf) + camera.x,
-                (-camera.sin_angle * zf - camera.cos_angle * zf) + camera.y,
-            );
+            let right = Vector2 {
+                x: FixedInt10::from((camera.cos_angle * zf - camera.sin_angle * zf) + camera.x),
+                y: FixedInt10::from((-camera.sin_angle * zf - camera.cos_angle * zf) + camera.y),
+            };
 
-            let stride = (
-                (right.0 - left.0) / screen_w as f32,
-                (right.1 - left.1) / screen_w as f32,
-            );
-
-            let fixed_left = (
-                (left.0 * precision_multipier) as i32,
-                (left.1 * precision_multipier) as i32,
-            );
-            let fixed_stride = (
-                (stride.0 * precision_multipier) as i32,
-                (stride.1 * precision_multipier) as i32,
-            );
+            let stride = Vector2 {
+                x: (right.x - left.x) / screen_w,
+                y: (right.y - left.y) / screen_w,
+            };
 
             for i in 0..screen_w as i32 {
                 let height_on_hm = map.get(
-                    (fixed_left.0 + i * fixed_stride.0) >> fixed_precision,
-                    (fixed_left.1 + i * fixed_stride.1) >> fixed_precision,
-                ) as i32;
-                let fixed_height_on_hm = height_on_hm << fixed_precision;
-
-                let texture_value = texture.get(
-                    (fixed_left.0 + i * fixed_stride.0) >> fixed_precision,
-                    (fixed_left.1 + i * fixed_stride.1) >> fixed_precision,
+                    (left.x + stride.x * i).into(),
+                    (left.y + stride.y * i).into(),
                 );
 
-                let fixed_real_height = ((fixed_height_on_hm - (camera.z << fixed_precision))
+                let texture_value = texture.get(
+                    (left.x + stride.x * i).into(),
+                    (left.y + stride.y * i).into(),
+                );
+
+                let real_height: FixedInt10 = ((FixedInt10::from(height_on_hm) - camera.z)
                     // trick here: scale_height AND z should be brought to fixed float, however
                     // the (<< PRECISION) cancel each other
                     << scale_height_shift)
                     / z
-                    + fixed_horizon;
+                    + horizon;
 
-                let real_height = max(0, fixed_real_height >> fixed_precision);
+                let real_height: i32 = max(0, real_height.into());
 
                 if real_height > max_height[i as usize] {
                     draw_line(
