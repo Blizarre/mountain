@@ -178,6 +178,7 @@ mod tests {
         assert_eq!(190, (origin - 10).into());
     }
 
+    #[test]
     fn fixedpoint_div() {
         let origin = FixedInt10::from(0.5);
         assert_eq!(0.25_f32, (origin / 2).into());
