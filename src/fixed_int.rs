@@ -1,7 +1,7 @@
 use std::convert::TryInto;
 use std::fmt;
 use std::fmt::{Debug, Formatter};
-use std::ops::{Add, Div, Mul, Shl, Sub};
+use std::ops::{Add, Div, Mul, Shl, Shr, Sub};
 
 #[derive(Copy, Default, Eq, Ord, PartialOrd, PartialEq)]
 pub struct FixedInt10 {
@@ -38,7 +38,7 @@ impl Into<i32> for FixedInt10 {
 
 impl Into<f32> for FixedInt10 {
     fn into(self) -> f32 {
-        (self.value >> FixedInt10::exponent()) as f32
+        self.value as f32 / FixedInt10::multiplier() as f32
     }
 }
 
@@ -73,6 +73,16 @@ impl Shl<i32> for FixedInt10 {
     fn shl(self, rhs: i32) -> Self::Output {
         Self {
             value: self.value << rhs,
+        }
+    }
+}
+
+impl Shr<i32> for FixedInt10 {
+    type Output = FixedInt10;
+
+    fn shr(self, rhs: i32) -> Self::Output {
+        Self {
+            value: self.value >> rhs,
         }
     }
 }
@@ -176,6 +186,13 @@ mod tests {
         assert_eq!(2000, (origin * 10).into());
         assert_eq!(210, (origin + 10).into());
         assert_eq!(190, (origin - 10).into());
+        assert_eq!(origin, (origin - 10) + 10);
+        assert_eq!(origin, (origin / 10) * 10);
+
+        let simple = FixedInt10::from(1);
+        assert_eq!(2, (simple << 1).into());
+        assert_eq!(4, (simple << 2).into());
+        assert_eq!(simple, (simple << 2) >> 2);
     }
 
     #[test]
