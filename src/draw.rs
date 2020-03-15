@@ -2,7 +2,7 @@ use crate::fixed_int::FixedInt10;
 use crate::vector::Vector2;
 use crate::{terrain, Camera};
 use rgb::RGBA8;
-use sdl::video::Surface;
+use sdl::video::{Color, Surface};
 use std::cmp::{max, min};
 
 fn get_pitch(surface: &Surface) -> u16 {
@@ -11,9 +11,9 @@ fn get_pitch(surface: &Surface) -> u16 {
 
 fn set_color(image: &mut [u8], i: usize, j: usize, pitch: usize, value: RGBA8) {
     let pixel_offset = i * 4 + j * pitch;
-    image[pixel_offset] = value.r;
+    image[pixel_offset] = value.b;
     image[pixel_offset + 1] = value.g;
-    image[pixel_offset + 2] = value.b;
+    image[pixel_offset + 2] = value.r;
 }
 
 fn draw_line(
@@ -41,10 +41,14 @@ pub fn draw(
     let screen_h = screen_h as i32;
 
     let pitch = get_pitch(&screen) as usize;
+    let sky = RGBA8::new(80, 120, 250, 0);
+
+    screen.fill(Color::RGB(sky.r, sky.g, sky.b));
 
     let horizon = FixedInt10::from(camera.horizon);
-    let scale_height = 1 * screen_h;
+    let scale_height = screen_h;
     let distance_max = 500;
+    let fog_start = 300;
 
     screen.with_lock(|screen_pixels| {
         let mut max_height = Vec::new();
@@ -73,11 +77,6 @@ pub fn draw(
                     (left.y + stride.y * i).into(),
                 );
 
-                let texture_value = texture.get(
-                    (left.x + stride.x * i).into(),
-                    (left.y + stride.y * i).into(),
-                );
-
                 let real_height: FixedInt10 = ((FixedInt10::from(height_on_hm) - camera.z)
                     // trick here: scale_height AND z should be brought to fixed float, however
                     // the (<< PRECISION) cancel each other
@@ -88,6 +87,26 @@ pub fn draw(
                 let real_height: i32 = max(0, real_height.into());
 
                 if real_height > max_height[i as usize] {
+                    let texture_value = texture.get(
+                        (left.x + stride.x * i).into(),
+                        (left.y + stride.y * i).into(),
+                    );
+
+                    let texture_value = if z > fog_start {
+                        let sky_weight =
+                            FixedInt10::from(z - fog_start) / (distance_max - fog_start);
+                        let texture_weight = FixedInt10::from(1) - sky_weight;
+
+                        RGBA8 {
+                            r: (texture_weight * texture_value.r + sky_weight * sky.r).into(),
+                            g: (texture_weight * texture_value.g + sky_weight * sky.g).into(),
+                            b: (texture_weight * texture_value.b + sky_weight * sky.b).into(),
+                            a: 0,
+                        }
+                    } else {
+                        texture_value
+                    };
+
                     draw_line(
                         screen_pixels,
                         i as usize,

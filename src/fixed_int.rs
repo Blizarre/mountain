@@ -36,6 +36,12 @@ impl Into<i32> for FixedInt10 {
     }
 }
 
+impl Into<u8> for FixedInt10 {
+    fn into(self) -> u8 {
+        (self.value >> FixedInt10::exponent()) as u8
+    }
+}
+
 impl Into<f32> for FixedInt10 {
     fn into(self) -> f32 {
         self.value as f32 / FixedInt10::multiplier() as f32
@@ -147,6 +153,16 @@ impl Mul<FixedInt10> for FixedInt10 {
     }
 }
 
+impl Mul<u8> for FixedInt10 {
+    type Output = Self;
+
+    fn mul(self, rhs: u8) -> Self::Output {
+        Self {
+            value: (self.value * rhs as i32),
+        }
+    }
+}
+
 impl Mul<i32> for FixedInt10 {
     type Output = Self;
 
@@ -182,9 +198,9 @@ mod tests {
     #[test]
     fn operations() {
         let origin = FixedInt10::from(200);
-        assert_eq!(20, (origin / 10).into());
-        assert_eq!(2000, (origin * 10).into());
-        assert_eq!(210, (origin + 10).into());
+        assert_eq!(20, (origin / 10_i32).into());
+        assert_eq!(2000, (origin * 10_i32).into());
+        assert_eq!(210, (origin + 10_i32).into());
         assert_eq!(190, (origin - 10).into());
         assert_eq!(origin, (origin - 10) + 10);
         assert_eq!(origin, (origin / 10) * 10);
@@ -193,13 +209,16 @@ mod tests {
         assert_eq!(2, (simple << 1).into());
         assert_eq!(4, (simple << 2).into());
         assert_eq!(simple, (simple << 2) >> 2);
+
+        let simple = FixedInt10::from(1_u8);
+        assert_eq!(8, (simple * 8_u8).into())
     }
 
     #[test]
     fn fixedpoint_div() {
         let origin = FixedInt10::from(0.5);
         assert_eq!(0.25_f32, (origin / 2).into());
-        assert_eq!(1, (origin * 2).into());
+        assert_eq!(1, (origin * 2_u8).into());
     }
 
     #[test]

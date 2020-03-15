@@ -3,7 +3,7 @@ use rgb::{RGBA, RGBA8};
 
 pub struct HeightMap(Bitmap<Grey<u8>>);
 
-pub struct Texture(Bitmap<RGBA<u8>>);
+pub struct Texture(Bitmap<RGBA8>);
 
 // We hardcode a size of 1024 for the heightmap / texture
 

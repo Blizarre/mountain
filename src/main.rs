@@ -97,7 +97,7 @@ fn main() {
     let mut frame_ctr = stats::Stats::default();
     let mut draw_ctr = stats::Stats::default();
 
-    let mut camera = Camera::new(500., 400., 200, 120);
+    let mut camera = Camera::new(500., 400., 200, 2 * screen.get_height() as i32 / 3);
 
     while !request_exit {
         frame_ctr.start_event();
@@ -105,8 +105,6 @@ fn main() {
         if process_events(&mut camera) {
             request_exit = true;
         }
-
-        screen.clear();
 
         draw_ctr.time(|| {
             draw::draw(&screen, &map, &texture, &camera);
