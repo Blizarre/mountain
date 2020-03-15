@@ -43,7 +43,7 @@ pub fn draw(
     let pitch = get_pitch(&screen) as usize;
 
     let horizon = FixedInt10::from(camera.horizon);
-    let scale_height_shift = 7;
+    let scale_height = 1 * screen_h;
     let distance_max = 500;
 
     screen.with_lock(|screen_pixels| {
@@ -81,7 +81,7 @@ pub fn draw(
                 let real_height: FixedInt10 = ((FixedInt10::from(height_on_hm) - camera.z)
                     // trick here: scale_height AND z should be brought to fixed float, however
                     // the (<< PRECISION) cancel each other
-                    << scale_height_shift)
+                    * scale_height)
                     / z
                     + horizon;
 
