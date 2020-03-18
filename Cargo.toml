@@ -4,8 +4,6 @@ version = "0.1.0"
 authors = ["Simon M. <git@simon.marache.net>"]
 edition = "2018"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
 [dependencies]
 sdl = { git = "git://git@github.com/Blizarre/rust-sdl.git" }
 lodepng = "2.5.0"
@@ -13,3 +11,11 @@ rgb = "0.8.16"
 
 [profile.release]
 lto = true
+
+[dev-dependencies]
+criterion = "0.3.1"
+
+[[bench]]
+name = "draw"
+harness = false
+target_time= 10

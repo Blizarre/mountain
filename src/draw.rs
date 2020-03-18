@@ -4,6 +4,14 @@ use rgb::RGBA8;
 use sdl::video::{Color, Surface};
 use std::cmp::{max, min};
 
+use crate::camera::Camera;
+use crate::terrain;
+
+#[derive(Default)]
+pub struct Settings {
+    pub fog: bool,
+}
+
 fn get_pitch(surface: &Surface) -> u16 {
     unsafe { (*surface.raw).pitch }
 }
@@ -34,6 +42,7 @@ pub fn draw(
     map: &terrain::HeightMap,
     texture: &terrain::Texture,
     camera: &Camera,
+    settings: &Settings,
 ) {
     let (screen_w, screen_h) = screen.get_size();
     let screen_w = screen_w as i32;
@@ -91,7 +100,7 @@ pub fn draw(
                         (left.y + stride.y * i).into(),
                     );
 
-                    let texture_value = if z > fog_start {
+                    let texture_value = if settings.fog && z > fog_start {
                         let sky_weight =
                             FixedInt10::from(z - fog_start) / (distance_max - fog_start);
                         let texture_weight = FixedInt10::from(1) - sky_weight;

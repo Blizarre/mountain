@@ -97,6 +97,7 @@ fn main() {
     let mut draw_ctr = Stats::default();
 
     let mut camera = Camera::new(500., 400., 200, 2 * screen.get_height() as i32 / 3);
+    let draw_settings = Settings::default();
 
     while !request_exit {
         frame_ctr.start_event();
@@ -106,7 +107,7 @@ fn main() {
         }
 
         draw_ctr.time(|| {
-            draw::draw(&screen, &map, &texture, &camera);
+            draw(&screen, &map, &texture, &camera, &draw_settings);
         });
 
         screen.flip();
