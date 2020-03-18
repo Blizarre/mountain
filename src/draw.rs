@@ -1,6 +1,5 @@
 use crate::fixed_int::FixedInt10;
 use crate::vector::Vector2;
-use crate::{terrain, Camera};
 use rgb::RGBA8;
 use sdl::video::{Color, Surface};
 use std::cmp::{max, min};

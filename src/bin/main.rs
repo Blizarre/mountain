@@ -1,24 +1,23 @@
+extern crate mountain;
+
 use std::thread::sleep;
 use std::time::Duration;
 
-use crate::terrain::{HeightMap, Texture};
 use sdl::event::Key::Escape;
 use sdl::event::{poll_event, Event, Key, MouseState};
 use sdl::mouse::set_cursor_visible;
 use sdl::video::{set_video_mode, SurfaceFlag};
 use sdl::{quit, InitFlag};
 
-mod vector;
+use mountain::vector::Vector2;
 
-use vector::Vector2;
+use mountain::camera::Camera;
+use mountain::draw::{draw, Settings};
+use mountain::stats::Stats;
+use mountain::terrain::{HeightMap, Texture};
 
-mod camera;
-mod draw;
-mod fixed_int;
-mod stats;
-mod terrain;
-
-use camera::Camera;
+use sdl::video::VideoFlag::Fullscreen;
+use std::f32::consts::PI;
 
 mod others {
     #[link(name = "SDL")]
@@ -94,8 +93,8 @@ fn main() {
     set_cursor_visible(false);
 
     let mut request_exit = false;
-    let mut frame_ctr = stats::Stats::default();
-    let mut draw_ctr = stats::Stats::default();
+    let mut frame_ctr = Stats::default();
+    let mut draw_ctr = Stats::default();
 
     let mut camera = Camera::new(500., 400., 200, 2 * screen.get_height() as i32 / 3);
 

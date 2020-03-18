@@ -46,7 +46,7 @@ impl HeightMap {
 }
 
 impl Texture {
-    pub fn get(self: &Self, i: i32, j: i32) -> RGBA8 {
+    pub fn get(self: &Self, i: i32, j: i32) -> RGBA<u8> {
         let i = (i as usize) & 1023;
         let j = (j as usize) & 1023;
         self.0.buffer[i + self.width() * j]
