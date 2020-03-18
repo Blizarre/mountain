@@ -53,7 +53,7 @@ impl Display for Stats {
             "time/events: {:.2} ms, # of events: {}, total time: {} ms",
             self.avg_micro() / 1000.0,
             self.num_events,
-            self.total_time.as_millis() / 1000
+            self.total_time.as_millis()
         )
     }
 }
