@@ -16,9 +16,6 @@ use mountain::draw::{draw, Settings};
 use mountain::stats::Stats;
 use mountain::terrain::{HeightMap, Texture};
 
-use sdl::video::VideoFlag::Fullscreen;
-use std::f32::consts::PI;
-
 mod others {
     #[link(name = "SDL")]
     #[link(name = "asound")]

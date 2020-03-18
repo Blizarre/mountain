@@ -5,8 +5,8 @@ extern crate sdl;
 use mountain::{camera, draw, terrain};
 
 use criterion::{black_box, Criterion};
-use sdl::video::SurfaceFlag;
 use mountain::draw::Settings;
+use sdl::video::SurfaceFlag;
 use std::time::Duration;
 
 pub fn draw_bench(c: &mut Criterion) {
@@ -36,28 +36,32 @@ pub fn draw_bench(c: &mut Criterion) {
         0x0000ff,
         0x000000ff,
     )
-        .unwrap();
+    .unwrap();
 
     let camera = camera::Camera::new(500., 400., 200, 2 * screen.get_height() as i32 / 3);
 
     c.bench_function("draw_fog", |b| {
-        b.iter(|| draw::draw(
-            black_box(&screen),
-            &map,
-            &texture,
-            black_box(&camera),
-            &Settings { fog: true })
-        )
+        b.iter(|| {
+            draw::draw(
+                black_box(&screen),
+                &map,
+                &texture,
+                black_box(&camera),
+                &Settings { fog: true },
+            )
+        })
     });
 
     c.bench_function("draw_nofog", |b| {
-        b.iter(|| draw::draw(
-            black_box(&screen),
-            &map,
-            &texture,
-            black_box(&camera),
-            &Settings { fog: false }
-        ))
+        b.iter(|| {
+            draw::draw(
+                black_box(&screen),
+                &map,
+                &texture,
+                black_box(&camera),
+                &Settings { fog: false },
+            )
+        })
     });
 }
 
