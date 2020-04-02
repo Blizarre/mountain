@@ -21,7 +21,7 @@ The texture is way to large for the pocketGo, but the goal is to push it to its 
 Todo:
 - improve performance:
   - remove `/` and `*` from the inner loop
-  - Use a smaller scale image for the heightmap
+  - Use a smaller scale image for the heightmap/texture at a distance
 - add texture interpolation for the ground
 - fix bugs
 

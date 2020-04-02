@@ -46,8 +46,8 @@ fn process_events(camera: &mut Camera) -> bool {
                     Escape => request_exit = true,
                     Key::Left => camera.update_angle(0.1),
                     Key::Right => camera.update_angle(-0.1),
-                    Key::Up => displacement.y -= 5,
-                    Key::Down => displacement.y += 5,
+                    Key::Up => displacement.y = 5,
+                    Key::Down => displacement.y -= 5,
                     Key::PageUp => camera.z += 5,
                     Key::PageDown => camera.z -= 5,
                     _ => (),
@@ -58,7 +58,7 @@ fn process_events(camera: &mut Camera) -> bool {
     }
 
     camera.x +=
-        (displacement.x as f32) * camera.cos_angle - (displacement.y as f32) * camera.sin_angle;
+        (displacement.x as f32) * camera.cos_angle + (displacement.y as f32) * camera.sin_angle;
     camera.y +=
         (displacement.x as f32) * camera.sin_angle + (displacement.y as f32) * camera.cos_angle;
 
@@ -94,7 +94,7 @@ fn main() {
     let mut draw_ctr = Stats::default();
 
     let mut camera = Camera::new(500., 400., 200, 2 * screen.get_height() as i32 / 3);
-    let draw_settings = Settings::default();
+    let draw_settings = Settings { fog: true };
 
     while !request_exit {
         frame_ctr.start_event();
