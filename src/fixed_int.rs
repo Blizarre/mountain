@@ -8,12 +8,6 @@ pub struct FixedInt10 {
     value: i32,
 }
 
-impl Debug for FixedInt10 {
-    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-        write!(f, "{}f10", self.value)
-    }
-}
-
 impl FixedInt10 {
     // To prepare for a potential macro / generic
     fn exponent() -> i32 {
@@ -21,6 +15,16 @@ impl FixedInt10 {
     }
     fn multiplier() -> i32 {
         2_i32.pow(FixedInt10::exponent().try_into().unwrap())
+    }
+}
+
+impl Debug for FixedInt10 {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        write!(
+            f,
+            "{:?} f10",
+            (self.value as f32) / (Self::multiplier() as f32)
+        )
     }
 }
 
