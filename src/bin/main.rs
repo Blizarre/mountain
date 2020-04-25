@@ -1,4 +1,5 @@
 extern crate mountain;
+extern crate toml;
 
 use std::thread::sleep;
 use std::time::Duration;
@@ -6,13 +7,14 @@ use std::time::Duration;
 use sdl::event::Key::Escape;
 use sdl::event::{poll_event, Event, Key, MouseState};
 use sdl::mouse::set_cursor_visible;
-use sdl::video::{set_video_mode, SurfaceFlag};
+use sdl::video::{set_video_mode, SurfaceFlag, VideoFlag};
 use sdl::{quit, InitFlag};
 
 use mountain::vector::Vector2;
 
 use mountain::camera::Camera;
-use mountain::draw::{draw, Settings};
+use mountain::config::ConfigError;
+use mountain::draw::draw;
 use mountain::stats::Stats;
 use mountain::terrain::{HeightMap, Texture};
 
@@ -83,10 +85,24 @@ fn main() {
         Ok(im) => im,
     };
 
+    let config = match mountain::config::Config::from_config("mountain.toml") {
+        Ok(c) => c,
+        Err(ConfigError { message }) => {
+            println!("Cannot read config file mountain.toml: {}", message);
+            return;
+        }
+    };
+
     sdl::init([InitFlag::Video].as_ref());
 
-    let screen =
-        set_video_mode(320, 240, 32, [SurfaceFlag::SWSurface].as_ref(), [].as_ref()).unwrap();
+    let screen = set_video_mode(
+        config.screen.width as isize,
+        config.screen.height as isize,
+        32,
+        [SurfaceFlag::SWSurface].as_ref(),
+        [VideoFlag::Fullscreen].as_ref(),
+    )
+    .unwrap();
     set_cursor_visible(false);
 
     let mut request_exit = false;
@@ -94,7 +110,6 @@ fn main() {
     let mut draw_ctr = Stats::default();
 
     let mut camera = Camera::new(500., 400., 200, 2 * screen.get_height() as i32 / 3);
-    let draw_settings = Settings { fog: true };
 
     while !request_exit {
         frame_ctr.start_event();
@@ -104,7 +119,7 @@ fn main() {
         }
 
         draw_ctr.time(|| {
-            draw(&screen, &map, &texture, &camera, &draw_settings);
+            draw(&screen, &map, &texture, &camera, &config);
         });
 
         screen.flip();

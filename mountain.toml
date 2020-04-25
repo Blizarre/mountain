@@ -1,0 +1,7 @@
+fog=true
+fog_start=1200
+distance_max=1300
+
+[screen]
+width=1920
+height=1080

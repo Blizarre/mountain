@@ -1,16 +1,11 @@
+use crate::camera::Camera;
+use crate::config::Config;
 use crate::fixed_int::FixedInt10;
+use crate::terrain;
 use crate::vector::Vector2;
 use rgb::RGBA8;
 use sdl::video::{Color, Surface};
 use std::cmp::{max, min};
-
-use crate::camera::Camera;
-use crate::terrain;
-
-#[derive(Default)]
-pub struct Settings {
-    pub fog: bool,
-}
 
 fn get_pitch(surface: &Surface) -> u16 {
     unsafe { (*surface.raw).pitch }
@@ -42,11 +37,10 @@ pub fn draw(
     map: &terrain::HeightMap,
     texture: &terrain::Texture,
     camera: &Camera,
-    settings: &Settings,
+    config: &Config,
 ) {
-    let (screen_w, screen_h) = screen.get_size();
-    let screen_w = screen_w as i32;
-    let screen_h = screen_h as i32;
+    let screen_w = config.screen.width;
+    let screen_h = config.screen.height;
 
     let pitch = get_pitch(&screen) as usize;
     let sky = RGBA8::new(80, 120, 250, 0);
@@ -55,14 +49,12 @@ pub fn draw(
 
     let horizon = FixedInt10::from(camera.horizon);
     let scale_height = screen_h;
-    let distance_max = 500;
-    let fog_start = 300;
 
     screen.with_lock(|screen_pixels| {
         let mut max_height = Vec::new();
         max_height.resize(screen_w as usize, 0);
 
-        for z in 1..distance_max {
+        for z in 1..config.distance_max {
             let zf = z as f32;
             let left = Vector2 {
                 x: FixedInt10::from((-camera.cos_angle * zf - camera.sin_angle * zf) + camera.x),
@@ -100,9 +92,9 @@ pub fn draw(
                         (left.y + stride.y * i).into(),
                     );
 
-                    let texture_value = if settings.fog && z > fog_start {
-                        let sky_weight =
-                            FixedInt10::from(z - fog_start) / (distance_max - fog_start);
+                    let texture_value = if config.fog && z > config.fog_start {
+                        let sky_weight = FixedInt10::from(z - config.fog_start)
+                            / (config.distance_max - config.fog_start);
                         let texture_weight = FixedInt10::from(1) - sky_weight;
 
                         RGBA8 {
