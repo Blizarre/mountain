@@ -1,5 +1,5 @@
 use crate::camera::Camera;
-use crate::config::Config;
+use crate::config::RendererConfig;
 use crate::fixed_int::FixedInt10;
 use crate::terrain;
 use crate::vector::Vector2;
@@ -37,10 +37,10 @@ pub fn draw(
     map: &terrain::HeightMap,
     texture: &terrain::Texture,
     camera: &Camera,
-    config: &Config,
+    config: &RendererConfig,
 ) {
-    let screen_w = config.screen.width;
-    let screen_h = config.screen.height;
+    let screen_w = screen.get_width() as i32;
+    let screen_h = screen.get_height() as i32;
 
     let pitch = get_pitch(&screen) as usize;
     let sky = RGBA8::new(80, 120, 250, 0);

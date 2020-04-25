@@ -5,17 +5,29 @@ extern crate serde_derive;
 use serde_derive::Deserialize;
 
 #[derive(Deserialize)]
-pub struct Screen {
+pub struct ScreenConfig {
     pub width: i32,
     pub height: i32,
 }
 
 #[derive(Deserialize)]
-pub struct Config {
+pub struct MapConfig {
+    pub texture: String,
+    pub heightmap: String,
+}
+
+#[derive(Deserialize)]
+pub struct RendererConfig {
     pub fog: bool,
     pub fog_start: i32,
     pub distance_max: i32,
-    pub screen: Screen,
+}
+
+#[derive(Deserialize)]
+pub struct Config {
+    pub renderer: RendererConfig,
+    pub screen: ScreenConfig,
+    pub map: MapConfig,
 }
 
 pub struct ConfigError {

@@ -14,7 +14,7 @@ use mountain::vector::Vector2;
 
 use mountain::camera::Camera;
 use mountain::config::ConfigError;
-use mountain::draw::draw;
+use mountain::renderer::draw;
 use mountain::stats::Stats;
 use mountain::terrain::{HeightMap, Texture};
 
@@ -68,22 +68,7 @@ fn process_events(camera: &mut Camera) -> bool {
 }
 
 fn main() {
-    println!("Starting");
-    let map = match HeightMap::from_file("hm.png") {
-        Err(e) => {
-            println!("Cannot open the map: {}", e);
-            return;
-        }
-        Ok(im) => im,
-    };
-
-    let texture = match Texture::from_file("tx.png") {
-        Err(e) => {
-            println!("Cannot open the texture: {}", e);
-            return;
-        }
-        Ok(im) => im,
-    };
+    println!("Loading configuration");
 
     let config = match mountain::config::Config::from_config("mountain.toml") {
         Ok(c) => c,
@@ -91,6 +76,24 @@ fn main() {
             println!("Cannot read config file mountain.toml: {}", message);
             return;
         }
+    };
+
+    println!("Loading textures");
+
+    let map = match HeightMap::from_file(config.map.heightmap.as_str()) {
+        Err(e) => {
+            println!("Cannot open the map: {}", e);
+            return;
+        }
+        Ok(im) => im,
+    };
+
+    let texture = match Texture::from_file(config.map.texture.as_str()) {
+        Err(e) => {
+            println!("Cannot open the texture: {}", e);
+            return;
+        }
+        Ok(im) => im,
     };
 
     sdl::init([InitFlag::Video].as_ref());
@@ -119,7 +122,7 @@ fn main() {
         }
 
         draw_ctr.time(|| {
-            draw(&screen, &map, &texture, &camera, &config);
+            draw(&screen, &map, &texture, &camera, &config.renderer);
         });
 
         screen.flip();

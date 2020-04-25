@@ -2,35 +2,27 @@
 extern crate criterion;
 extern crate sdl;
 
-use mountain::{camera, draw, terrain};
+use mountain::{camera, renderer, terrain};
 
 use criterion::{black_box, Criterion};
-use mountain::config::{Config, Screen};
+use mountain::config::RendererConfig;
 use sdl::video::SurfaceFlag;
 use std::time::Duration;
 
-const BENCH_FAST: Config = Config {
-    fog_start: 300,
-    fog: true,
-    distance_max: 350,
-    screen: Screen {
-        width: 320,
-        height: 240,
-    },
-};
-
-const BENCH_SLOW: Config = Config {
-    fog_start: 1000,
-    fog: true,
-    distance_max: 1100,
-    screen: Screen {
-        width: 1920,
-        height: 1080,
-    },
-};
-
 // TODO: Refactor for slow/fast processor
 pub fn draw_bench(c: &mut Criterion) {
+    let bench_config_fast = RendererConfig {
+        fog_start: 300,
+        fog: true,
+        distance_max: 350,
+    };
+
+    let bench_config_slow = RendererConfig {
+        fog_start: 1000,
+        fog: true,
+        distance_max: 1100,
+    };
+
     let map = match terrain::HeightMap::from_file("hm.png") {
         Err(e) => {
             println!("Cannot open the map: {}", e);
@@ -49,8 +41,8 @@ pub fn draw_bench(c: &mut Criterion) {
 
     let screen_fast = sdl::video::Surface::new(
         &[SurfaceFlag::SWSurface],
-        BENCH_FAST.screen.width as isize,
-        BENCH_FAST.screen.height as isize,
+        320,
+        240,
         32,
         0xff0000,
         0x00ff00,
@@ -61,8 +53,8 @@ pub fn draw_bench(c: &mut Criterion) {
 
     let screen_slow = sdl::video::Surface::new(
         &[SurfaceFlag::SWSurface],
-        BENCH_SLOW.screen.width as isize,
-        BENCH_SLOW.screen.height as isize,
+        1920,
+        1080,
         32,
         0xff0000,
         0x00ff00,
@@ -76,24 +68,24 @@ pub fn draw_bench(c: &mut Criterion) {
 
     c.bench_function("draw_fast", |b| {
         b.iter(|| {
-            draw::draw(
+            renderer::draw(
                 black_box(&screen_fast),
                 &map,
                 &texture,
                 black_box(&camera_fast),
-                black_box(&BENCH_FAST),
+                black_box(&bench_config_fast),
             )
         })
     });
 
     c.bench_function("draw_slow", |b| {
         b.iter(|| {
-            draw::draw(
+            renderer::draw(
                 black_box(&screen_slow),
                 &map,
                 &texture,
                 black_box(&camera_slow),
-                black_box(&BENCH_SLOW),
+                black_box(&bench_config_slow),
             )
         })
     });
