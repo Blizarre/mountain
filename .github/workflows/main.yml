@@ -35,6 +35,9 @@ jobs:
           rustup toolchain update --no-self-update stable
           rustup default stable
 
+      - name: Update apt cache
+        run: sudo apt-get update
+
       - name: Install missing packages
         run: sudo apt-get install libsdl1.2-dev
 
