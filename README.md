@@ -14,7 +14,8 @@ Benchmark for the version as of this commit (1024x1024 texture and height map, 3
 - i7 laptop: 45.2ms / draw debug, 3.2ms /  draw release
 - pocketGo: 50ms / draw release
 
-The texture is way to large for the pocketGo, but the goal is to push it to its limits.
+The texture is way to large for the pocketGo, but the goal is to push it to its limits. I tried to reduce the memory footprint by using the
+a colormap (8bit palette) but in the end it was a little bit slower, probably because the full texture is already small enough to fit in caches.
 
 ![High-resolution screenshot (from the laptop)](screenshots/hires.png)
 
