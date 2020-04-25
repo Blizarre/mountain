@@ -104,7 +104,7 @@ pub fn draw(
                             a: 0,
                         }
                     } else {
-                        texture_value
+                        *texture_value
                     };
 
                     draw_line(
