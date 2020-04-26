@@ -5,7 +5,7 @@ use std::thread::sleep;
 use std::time::Duration;
 
 use sdl::event::Key::Escape;
-use sdl::event::{poll_event, Event, Key, MouseState};
+use sdl::event::{poll_event, Event, Key};
 use sdl::mouse::set_cursor_visible;
 use sdl::video::{set_video_mode, SurfaceFlag, VideoFlag};
 use sdl::{quit, InitFlag};
@@ -13,10 +13,11 @@ use sdl::{quit, InitFlag};
 use mountain::vector::Vector2;
 
 use mountain::camera::Camera;
-use mountain::config::ConfigError;
+use mountain::config::{ConfigError, PlayerConfig};
 use mountain::renderer::draw;
 use mountain::stats::Stats;
 use mountain::terrain::{HeightMap, Texture};
+use sdl::wm::{grab_input, GrabMode};
 
 mod others {
     #[link(name = "SDL")]
@@ -24,39 +25,98 @@ mod others {
     extern "C" {}
 }
 
-fn process_events(camera: &mut Camera) -> bool {
+#[derive(Default, Copy, Clone)]
+struct KeyPressedState {
+    pub left_pressed: bool,
+    pub back_pressed: bool,
+    pub forward_pressed: bool,
+    pub right_pressed: bool,
+    // During the first PollEvent, SDL will report the current location of the mouse as a relative
+    // motion. This is why we need to ignore it as we are really only interested in relative motion
+    // from frame to frame
+    pub motion_initialized: bool,
+}
+
+fn process_events(
+    camera: &mut Camera,
+    player: &PlayerConfig,
+    key_state: &mut KeyPressedState,
+) -> bool {
     let mut displacement = Vector2 { x: 0, y: 0 };
     let mut request_exit = false;
 
+    // If we receive a KEYDOWN event followed by a KEYUP event in the same fram, they would cancel
+    // each other and we would not register the movement. This State object is only activated
+    // on KeyDown and is not kept for the following frame
+    let mut single_tap = KeyPressedState::default();
+
+    // SDL will fire multiple Mouse events for each frame, so we add all the motion into this
+    // variable to do all the complex computations (sin/cos) once at the end
+    let mut mouse_motion: Vector2<i16> = Vector2::default();
+
+    println!("process");
     loop {
         let evt = poll_event();
         match evt {
             Event::None => break,
             Event::Quit => request_exit = true,
-            Event::MouseMotion(state, _, _, xrel, yrel) => {
-                if state.contains(&MouseState::Left) {
-                    camera.update_angle(-(xrel as f32) / 100.);
-                    camera.horizon += yrel as i32;
+            Event::MouseMotion(_, _, _, xrel, yrel) => {
+                if key_state.motion_initialized {
+                    mouse_motion.x += xrel;
+                    mouse_motion.y += yrel;
                 } else {
-                    displacement.x += xrel;
-                    displacement.y += yrel;
+                    key_state.motion_initialized = true;
                 }
             }
-            Event::Key(k, false, _, _) => {
-                println!("keypress: {:?}", k as usize);
+            Event::Key(k, pressed, _, _) => {
+                println!("keypress: {:?}, {}", k as usize, pressed);
                 match k {
                     Escape => request_exit = true,
-                    Key::Left => camera.update_angle(0.1),
-                    Key::Right => camera.update_angle(-0.1),
-                    Key::Up => displacement.y = 5,
-                    Key::Down => displacement.y -= 5,
-                    Key::PageUp => camera.z += 5,
-                    Key::PageDown => camera.z -= 5,
+                    Key::A => {
+                        if pressed {
+                            single_tap.left_pressed = true;
+                        }
+                        key_state.left_pressed = pressed
+                    }
+                    Key::D => {
+                        if pressed {
+                            single_tap.right_pressed = true;
+                        }
+                        key_state.right_pressed = pressed
+                    }
+                    Key::W => {
+                        if pressed {
+                            single_tap.forward_pressed = true;
+                        }
+                        key_state.forward_pressed = pressed
+                    }
+                    Key::S => {
+                        if pressed {
+                            single_tap.back_pressed = true;
+                        }
+                        key_state.back_pressed = pressed
+                    }
                     _ => (),
                 }
             }
             _ => (),
         }
+    }
+
+    camera.update_angle(-(player.sensitivity_x * mouse_motion.x as f32) / 100.);
+    camera.horizon += (player.sensitivity_y * mouse_motion.y as f32) as i32;
+
+    if key_state.left_pressed || single_tap.left_pressed {
+        displacement.x -= player.speed
+    }
+    if key_state.right_pressed || single_tap.right_pressed {
+        displacement.x += player.speed
+    }
+    if key_state.forward_pressed || single_tap.forward_pressed {
+        displacement.y -= player.speed
+    }
+    if key_state.back_pressed || single_tap.back_pressed {
+        displacement.y += player.speed
     }
 
     camera.x +=
@@ -107,19 +167,22 @@ fn main() {
     )
     .unwrap();
     set_cursor_visible(false);
+    grab_input(GrabMode::On);
 
     let mut request_exit = false;
     let mut frame_ctr = Stats::default();
     let mut draw_ctr = Stats::default();
+    let mut key_pressed = KeyPressedState::default();
 
-    let mut camera = Camera::new(500., 400., 200, 2 * screen.get_height() as i32 / 3);
+    let mut camera = Camera::new(500., 400., 200, screen.get_height() as i32 / 2);
 
     while !request_exit {
         frame_ctr.start_event();
 
-        if process_events(&mut camera) {
+        if process_events(&mut camera, &config.player, &mut key_pressed) {
             request_exit = true;
         }
+        camera.z = config.player.height + map.get(camera.x as i32, camera.y as i32) as i32;
 
         draw_ctr.time(|| {
             draw(&screen, &map, &texture, &camera, &config.renderer);

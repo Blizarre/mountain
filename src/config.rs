@@ -17,6 +17,14 @@ pub struct MapConfig {
 }
 
 #[derive(Deserialize)]
+pub struct PlayerConfig {
+    pub height: i32,
+    pub speed: i32,
+    pub sensitivity_x: f32,
+    pub sensitivity_y: f32,
+}
+
+#[derive(Deserialize)]
 pub struct RendererConfig {
     pub fog: bool,
     pub fog_start: i32,
@@ -28,6 +36,7 @@ pub struct Config {
     pub renderer: RendererConfig,
     pub screen: ScreenConfig,
     pub map: MapConfig,
+    pub player: PlayerConfig,
 }
 
 pub struct ConfigError {
