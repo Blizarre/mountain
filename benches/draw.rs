@@ -63,8 +63,18 @@ pub fn draw_bench(c: &mut Criterion) {
     )
     .unwrap();
 
-    let camera_slow = camera::Camera::new(500., 400., 200, 2 * screen_slow.get_height() as i32 / 3);
-    let camera_fast = camera::Camera::new(500., 400., 200, 2 * screen_fast.get_height() as i32 / 3);
+    let camera_slow = camera::Camera::new(
+        500.,
+        400.,
+        200.into(),
+        2 * screen_slow.get_height() as i32 / 3,
+    );
+    let camera_fast = camera::Camera::new(
+        500.,
+        400.,
+        200.into(),
+        2 * screen_fast.get_height() as i32 / 3,
+    );
 
     c.bench_function("draw_fast", |b| {
         b.iter(|| {

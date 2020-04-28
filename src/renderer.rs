@@ -72,15 +72,12 @@ pub fn draw(
             };
 
             for i in 0..screen_w as i32 {
-                let height_on_hm = map.get(
-                    (left.x + stride.x * i).into(),
-                    (left.y + stride.y * i).into(),
-                );
+                let height_on_hm = map.get(left.x + stride.x * i, left.y + stride.y * i);
 
-                let real_height: FixedInt10 = ((FixedInt10::from(height_on_hm) - camera.z)
+                let real_height: FixedInt10 = (height_on_hm - camera.z)
                     // trick here: scale_height AND z should be brought to fixed float, however
                     // the (<< PRECISION) cancel each other
-                    * scale_height)
+                    * scale_height
                     / z
                     + horizon;
 

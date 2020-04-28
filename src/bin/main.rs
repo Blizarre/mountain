@@ -14,6 +14,7 @@ use mountain::vector::Vector2;
 
 use mountain::camera::Camera;
 use mountain::config::{ConfigError, PlayerConfig};
+use mountain::fixed_int::FixedInt10;
 use mountain::renderer::draw;
 use mountain::stats::Stats;
 use mountain::terrain::{HeightMap, Texture};
@@ -174,7 +175,7 @@ fn main() {
     let mut draw_ctr = Stats::default();
     let mut key_pressed = KeyPressedState::default();
 
-    let mut camera = Camera::new(500., 400., 200, screen.get_height() as i32 / 2);
+    let mut camera = Camera::new(500., 400., 200.into(), screen.get_height() as i32 / 2);
 
     while !request_exit {
         frame_ctr.start_event();
@@ -182,7 +183,8 @@ fn main() {
         if process_events(&mut camera, &config.player, &mut key_pressed) {
             request_exit = true;
         }
-        camera.z = config.player.height + map.get(camera.x as i32, camera.y as i32) as i32;
+        camera.z =
+            FixedInt10::from(config.player.height) + map.get(camera.x.into(), camera.y.into());
 
         draw_ctr.time(|| {
             draw(&screen, &map, &texture, &camera, &config.renderer);

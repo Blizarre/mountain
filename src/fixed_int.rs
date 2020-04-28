@@ -1,7 +1,7 @@
 use std::convert::TryInto;
 use std::fmt;
 use std::fmt::{Debug, Formatter};
-use std::ops::{Add, Div, Mul, Shl, Shr, Sub};
+use std::ops::{Add, BitAnd, Div, Mul, Shl, Shr, Sub};
 
 #[derive(Copy, Default, Eq, Ord, PartialOrd, PartialEq)]
 pub struct FixedInt10 {
@@ -15,6 +15,20 @@ impl FixedInt10 {
     }
     fn multiplier() -> i32 {
         2_i32.pow(FixedInt10::exponent().try_into().unwrap())
+    }
+
+    // zero out the non-integer part
+    pub fn floor(self) -> FixedInt10 {
+        FixedInt10 {
+            value: self.value & ((!0_i32) ^ (FixedInt10::multiplier() - 1)),
+        }
+    }
+
+    // zero out the bits of the integer part
+    pub fn fract(self) -> FixedInt10 {
+        FixedInt10 {
+            value: self.value & (FixedInt10::multiplier() - 1),
+        }
     }
 }
 
@@ -37,6 +51,12 @@ impl Clone for FixedInt10 {
 impl Into<i32> for FixedInt10 {
     fn into(self) -> i32 {
         self.value >> FixedInt10::exponent()
+    }
+}
+
+impl Into<usize> for FixedInt10 {
+    fn into(self) -> usize {
+        (self.value as u32 >> FixedInt10::exponent() as u32) as usize
     }
 }
 
@@ -93,6 +113,16 @@ impl Shr<i32> for FixedInt10 {
     fn shr(self, rhs: i32) -> Self::Output {
         Self {
             value: self.value >> rhs,
+        }
+    }
+}
+
+impl BitAnd<i32> for FixedInt10 {
+    type Output = FixedInt10;
+
+    fn bitand(self, rhs: i32) -> Self::Output {
+        Self {
+            value: self.value & (rhs << FixedInt10::exponent()),
         }
     }
 }
@@ -233,5 +263,17 @@ mod tests {
         assert_ne!(FixedInt10::from(220), 200.into());
         assert_ne!(FixedInt10::from(0.), 1.into());
         assert_eq!(FixedInt10::from(0.), FixedInt10::from(1.) - 1);
+    }
+
+    #[test]
+    fn bits_manipulation() {
+        let origin = FixedInt10::from(2.5f32);
+        assert_eq!(2, origin.floor().into());
+        assert_eq!(0.5f32, origin.fract().into());
+        assert_eq!(FixedInt10::from(2), origin.floor());
+        assert_eq!(FixedInt10::from(0.5), origin.fract());
+        assert_eq!(FixedInt10::from(5), origin << 1);
+        assert_eq!(FixedInt10::from(1.25), origin >> 1);
+        assert_eq!(FixedInt10::from(2), origin & 2);
     }
 }
