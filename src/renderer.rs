@@ -72,8 +72,11 @@ pub fn draw(
             };
 
             for i in 0..screen_w as i32 {
-                let height_on_hm = map.get(left.x + stride.x * i, left.y + stride.y * i);
-
+                let height_on_hm = if config.enable_hm_filtering && z < 100 {
+                    map.get_interpolate(left.x + stride.x * i, left.y + stride.y * i)
+                } else {
+                    map.get(left.x + stride.x * i, left.y + stride.y * i)
+                };
                 let real_height: FixedInt10 = (height_on_hm - camera.z)
                     // trick here: scale_height AND z should be brought to fixed float, however
                     // the (<< PRECISION) cancel each other

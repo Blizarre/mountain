@@ -13,7 +13,7 @@ use sdl::{quit, InitFlag};
 use mountain::vector::Vector2;
 
 use mountain::camera::Camera;
-use mountain::config::{ConfigError, PlayerConfig};
+use mountain::config::{Config, ConfigError};
 use mountain::fixed_int::FixedInt10;
 use mountain::renderer::draw;
 use mountain::stats::Stats;
@@ -40,7 +40,7 @@ struct KeyPressedState {
 
 fn process_events(
     camera: &mut Camera,
-    player: &PlayerConfig,
+    config: &mut Config,
     key_state: &mut KeyPressedState,
 ) -> bool {
     let mut displacement = Vector2 { x: 0, y: 0 };
@@ -97,6 +97,12 @@ fn process_events(
                         }
                         key_state.back_pressed = pressed
                     }
+                    Key::B => {
+                        if pressed {
+                            config.renderer.enable_hm_filtering =
+                                !config.renderer.enable_hm_filtering;
+                        }
+                    }
                     _ => (),
                 }
             }
@@ -104,20 +110,20 @@ fn process_events(
         }
     }
 
-    camera.update_angle(-(player.sensitivity_x * mouse_motion.x as f32) / 100.);
-    camera.horizon += (player.sensitivity_y * mouse_motion.y as f32) as i32;
+    camera.update_angle(-(config.player.sensitivity_x * mouse_motion.x as f32) / 100.);
+    camera.horizon += (config.player.sensitivity_y * mouse_motion.y as f32) as i32;
 
     if key_state.left_pressed || single_tap.left_pressed {
-        displacement.x -= player.speed
+        displacement.x -= config.player.speed
     }
     if key_state.right_pressed || single_tap.right_pressed {
-        displacement.x += player.speed
+        displacement.x += config.player.speed
     }
     if key_state.forward_pressed || single_tap.forward_pressed {
-        displacement.y -= player.speed
+        displacement.y -= config.player.speed
     }
     if key_state.back_pressed || single_tap.back_pressed {
-        displacement.y += player.speed
+        displacement.y += config.player.speed
     }
 
     camera.x +=
@@ -131,7 +137,7 @@ fn process_events(
 fn main() {
     println!("Loading configuration");
 
-    let config = match mountain::config::Config::from_config("mountain.toml") {
+    let mut config = match mountain::config::Config::from_config("mountain.toml") {
         Ok(c) => c,
         Err(ConfigError { message }) => {
             println!("Cannot read config file mountain.toml: {}", message);
@@ -180,11 +186,11 @@ fn main() {
     while !request_exit {
         frame_ctr.start_event();
 
-        if process_events(&mut camera, &config.player, &mut key_pressed) {
+        if process_events(&mut camera, &mut config, &mut key_pressed) {
             request_exit = true;
         }
-        camera.z =
-            FixedInt10::from(config.player.height) + map.get(camera.x.into(), camera.y.into());
+        camera.z = FixedInt10::from(config.player.height)
+            + map.get_interpolate(camera.x.into(), camera.y.into());
 
         draw_ctr.time(|| {
             draw(&screen, &map, &texture, &camera, &config.renderer);

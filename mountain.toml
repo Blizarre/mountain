@@ -2,6 +2,7 @@
 fog=true
 fog_start=1200
 distance_max=1300
+enable_hm_filtering=false
 
 [screen]
 width=1920

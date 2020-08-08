@@ -10,6 +10,12 @@ pub struct Texture(Bitmap<RGBA8>);
 
 impl HeightMap {
     pub fn get(self: &Self, i: FixedInt10, j: FixedInt10) -> FixedInt10 {
+        let i = Into::<usize>::into(i.floor()) & 1023;
+        let j = Into::<usize>::into(j.floor()) & 1023;
+        self.0.buffer[i + self.width() * j].0.into()
+    }
+
+    pub fn get_interpolate(self: &Self, i: FixedInt10, j: FixedInt10) -> FixedInt10 {
         let i0 = Into::<usize>::into(i.floor()) & 1023;
         let i1 = (i0 + 1) & 1023;
         let i: FixedInt10 = i.fract();
@@ -86,21 +92,24 @@ mod tests {
     #[test]
     fn get_boundaries() {
         let map = sample_map();
-        assert_eq!(map.get(0.into(), 0.into()), 1.into());
-        assert_eq!(map.get(1.into(), 0.into()), 2.into());
-        assert_eq!(map.get(0.into(), 1.into()), 3.into());
-        assert_eq!(map.get(1.into(), 1.into()), 4.into());
+        assert_eq!(map.get_interpolate(0.into(), 0.into()), 1.into());
+        assert_eq!(map.get_interpolate(1.into(), 0.into()), 2.into());
+        assert_eq!(map.get_interpolate(0.into(), 1.into()), 3.into());
+        assert_eq!(map.get_interpolate(1.into(), 1.into()), 4.into());
 
-        assert_eq!(map.get((1024 + 1).into(), 1.into()), 4.into());
-        assert_eq!(map.get((1024 + 1).into(), (1024 + 1).into()), 4.into());
-        assert_eq!(map.get((-1).into(), (-1).into()), 5.into());
+        assert_eq!(map.get_interpolate((1024 + 1).into(), 1.into()), 4.into());
+        assert_eq!(
+            map.get_interpolate((1024 + 1).into(), (1024 + 1).into()),
+            4.into()
+        );
+        assert_eq!(map.get_interpolate((-1).into(), (-1).into()), 5.into());
     }
 
     #[test]
     fn get_interpolation() {
         let map = sample_map();
         assert_eq!(
-            map.get((0.5f32).into(), (0.5f32).into()),
+            map.get_interpolate((0.5f32).into(), (0.5f32).into()),
             FixedInt10::from(1 + 2 + 3 + 4) / 4
         );
     }
