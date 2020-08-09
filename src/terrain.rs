@@ -116,10 +116,44 @@ mod tests {
 }
 
 impl Texture {
-    pub fn get(self: &Self, i: i32, j: i32) -> RGBA<u8> {
-        let i = (i as usize) & 1023;
-        let j = (j as usize) & 1023;
+    pub fn get(self: &Self, i: FixedInt10, j: FixedInt10) -> RGBA<u8> {
+        let i = Into::<usize>::into(i) & 1023;
+        let j = Into::<usize>::into(j) & 1023;
         self.0.buffer[i + self.width() * j]
+    }
+
+    fn to_fixed_int_rgb(val: RGBA<u8>) -> RGBA<FixedInt10> {
+        RGBA{
+            r: val.r.into(),
+            g: val.g.into(),
+            b: val.b.into(),
+            a: val.a.into(),
+        }
+    }
+
+    pub fn get_interpolate(self: &Self, i: FixedInt10, j: FixedInt10) -> RGBA<u8> {
+        let i0 = Into::<usize>::into(i.floor()) & 1023;
+        let i1 = (i0 + 1) & 1023;
+        let i: FixedInt10 = i.fract();
+        let ic = FixedInt10::from(1) - i;
+
+        let j0 = Into::<usize>::into(j.floor()) & 1023;
+        let j1 = (j0 + 1) & 1023;
+        let j: FixedInt10 = j.fract();
+        let jc = FixedInt10::from(1) - j;
+
+        let f00 = Self::to_fixed_int_rgb(self.0.buffer[i0 + self.width() * j0]);
+        let f10 = Self::to_fixed_int_rgb(self.0.buffer[i1 + self.width() * j0]);
+        let f01 = Self::to_fixed_int_rgb(self.0.buffer[i0 + self.width() * j1]);
+        let f11 = Self::to_fixed_int_rgb(self.0.buffer[i1 + self.width() * j1]);
+
+        // See https://en.wikipedia.org/wiki/Bilinear_interpolation#Unit_square
+        RGBA{
+            r: (f00.r * ic * jc + f10.r * i * jc + f01.r * ic * j + f11.r * i * j).into(),
+            g: (f00.g * ic * jc + f10.g * i * jc + f01.g * ic * j + f11.g * i * j).into(),
+            b: (f00.b * ic * jc + f10.b * i * jc + f01.b * ic * j + f11.b * i * j).into(),
+            a: (f00.a).into(),
+        }
     }
 
     pub fn from_file(path: &str) -> Result<Texture, String> {

@@ -55,7 +55,6 @@ fn process_events(
     // variable to do all the complex computations (sin/cos) once at the end
     let mut mouse_motion: Vector2<i16> = Vector2::default();
 
-    println!("process");
     loop {
         let evt = poll_event();
         match evt {
@@ -99,8 +98,8 @@ fn process_events(
                     }
                     Key::B => {
                         if pressed {
-                            config.renderer.enable_hm_filtering =
-                                !config.renderer.enable_hm_filtering;
+                            config.renderer.enable_filtering =
+                                !config.renderer.enable_filtering;
                         }
                     }
                     _ => (),

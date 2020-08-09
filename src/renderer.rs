@@ -72,7 +72,7 @@ pub fn draw(
             };
 
             for i in 0..screen_w as i32 {
-                let height_on_hm = if config.enable_hm_filtering && z < 100 {
+                let height_on_hm = if config.enable_filtering && z < 100 {
                     map.get_interpolate(left.x + stride.x * i, left.y + stride.y * i)
                 } else {
                     map.get(left.x + stride.x * i, left.y + stride.y * i)
@@ -87,10 +87,17 @@ pub fn draw(
                 let real_height: i32 = max(0, real_height.into());
 
                 if real_height > max_height[i as usize] {
-                    let texture_value = texture.get(
-                        (left.x + stride.x * i).into(),
-                        (left.y + stride.y * i).into(),
-                    );
+                    let texture_value = if config.enable_filtering && z < 100 {
+                        texture.get_interpolate(
+                            (left.x + stride.x * i).into(),
+                            (left.y + stride.y * i).into(),
+                        )
+                    } else {
+                        texture.get(
+                            (left.x + stride.x * i).into(),
+                            (left.y + stride.y * i).into(),
+                        )
+                    };
 
                     let texture_value = if config.fog && z > config.fog_start {
                         let sky_weight = FixedInt10::from(z - config.fog_start)
