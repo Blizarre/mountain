@@ -30,6 +30,7 @@ pub struct RendererConfig {
     pub fog_start: i32,
     pub distance_max: i32,
     pub enable_filtering: bool,
+    pub scale_height: f32,
 }
 
 #[derive(Deserialize)]

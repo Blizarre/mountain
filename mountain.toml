@@ -2,15 +2,16 @@
 fog=true
 fog_start=1200
 distance_max=1300
-enable_hm_filtering=false
+enable_filtering=true
+scale_height=0.5
 
 [screen]
 width=1920
 height=1080
 
 [map]
-heightmap="hm.png"
-texture="tx.png"
+heightmap="hm2.png"
+texture="tx2.png"
 
 [player]
 height=25

@@ -98,8 +98,7 @@ fn process_events(
                     }
                     Key::B => {
                         if pressed {
-                            config.renderer.enable_filtering =
-                                !config.renderer.enable_filtering;
+                            config.renderer.enable_filtering = !config.renderer.enable_filtering;
                         }
                     }
                     _ => (),

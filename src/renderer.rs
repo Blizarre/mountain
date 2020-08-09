@@ -48,7 +48,7 @@ pub fn draw(
     screen.fill(Color::RGB(sky.r, sky.g, sky.b));
 
     let horizon = FixedInt10::from(camera.horizon);
-    let scale_height = screen_h;
+    let scale_height = ((screen_h as f32) * config.scale_height) as i32;
 
     screen.with_lock(|screen_pixels| {
         let mut max_height = Vec::new();
@@ -88,15 +88,9 @@ pub fn draw(
 
                 if real_height > max_height[i as usize] {
                     let texture_value = if config.enable_filtering && z < 100 {
-                        texture.get_interpolate(
-                            (left.x + stride.x * i).into(),
-                            (left.y + stride.y * i).into(),
-                        )
+                        texture.get_interpolate(left.x + stride.x * i, left.y + stride.y * i)
                     } else {
-                        texture.get(
-                            (left.x + stride.x * i).into(),
-                            (left.y + stride.y * i).into(),
-                        )
+                        texture.get(left.x + stride.x * i, left.y + stride.y * i)
                     };
 
                     let texture_value = if config.fog && z > config.fog_start {

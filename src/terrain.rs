@@ -122,8 +122,8 @@ impl Texture {
         self.0.buffer[i + self.width() * j]
     }
 
-    fn to_fixed_int_rgb(val: RGBA<u8>) -> RGBA<FixedInt10> {
-        RGBA{
+    fn u8_to_fixed_int_rgb(val: RGBA<u8>) -> RGBA<FixedInt10> {
+        RGBA {
             r: val.r.into(),
             g: val.g.into(),
             b: val.b.into(),
@@ -142,13 +142,13 @@ impl Texture {
         let j: FixedInt10 = j.fract();
         let jc = FixedInt10::from(1) - j;
 
-        let f00 = Self::to_fixed_int_rgb(self.0.buffer[i0 + self.width() * j0]);
-        let f10 = Self::to_fixed_int_rgb(self.0.buffer[i1 + self.width() * j0]);
-        let f01 = Self::to_fixed_int_rgb(self.0.buffer[i0 + self.width() * j1]);
-        let f11 = Self::to_fixed_int_rgb(self.0.buffer[i1 + self.width() * j1]);
+        let f00 = Self::u8_to_fixed_int_rgb(self.0.buffer[i0 + self.width() * j0]);
+        let f10 = Self::u8_to_fixed_int_rgb(self.0.buffer[i1 + self.width() * j0]);
+        let f01 = Self::u8_to_fixed_int_rgb(self.0.buffer[i0 + self.width() * j1]);
+        let f11 = Self::u8_to_fixed_int_rgb(self.0.buffer[i1 + self.width() * j1]);
 
         // See https://en.wikipedia.org/wiki/Bilinear_interpolation#Unit_square
-        RGBA{
+        RGBA {
             r: (f00.r * ic * jc + f10.r * i * jc + f01.r * ic * j + f11.r * i * j).into(),
             g: (f00.g * ic * jc + f10.g * i * jc + f01.g * ic * j + f11.g * i * j).into(),
             b: (f00.b * ic * jc + f10.b * i * jc + f01.b * ic * j + f11.b * i * j).into(),
