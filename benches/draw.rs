@@ -15,12 +15,16 @@ pub fn draw_bench(c: &mut Criterion) {
         fog_start: 300,
         fog: true,
         distance_max: 350,
+        enable_filtering: false,
+        scale_height: 1.0,
     };
 
     let bench_config_slow = RendererConfig {
         fog_start: 1000,
         fog: true,
         distance_max: 1100,
+        enable_filtering: true,
+        scale_height: 1.0,
     };
 
     let map = match terrain::HeightMap::from_file("hm.png") {
