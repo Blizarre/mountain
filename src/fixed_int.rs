@@ -48,27 +48,28 @@ impl Clone for FixedInt10 {
     }
 }
 
-impl Into<i32> for FixedInt10 {
-    fn into(self) -> i32 {
-        self.value >> FixedInt10::exponent()
+impl From<FixedInt10> for i32 {
+    fn from(val: FixedInt10) -> i32 {
+        val.value >> FixedInt10::exponent()
     }
 }
 
-impl Into<usize> for FixedInt10 {
-    fn into(self) -> usize {
-        (self.value as u32 >> FixedInt10::exponent() as u32) as usize
+impl From<FixedInt10> for usize {
+    fn from(val: FixedInt10) -> usize {
+        (val.value as u32 >> FixedInt10::exponent() as u32) as usize
     }
 }
 
-impl Into<u8> for FixedInt10 {
-    fn into(self) -> u8 {
-        (self.value >> FixedInt10::exponent()) as u8
+impl From<FixedInt10> for u8 {
+    fn from(val: FixedInt10) -> u8 {
+        (val.value >> FixedInt10::exponent()) as u8
     }
 }
 
-impl Into<f32> for FixedInt10 {
-    fn into(self) -> f32 {
-        self.value as f32 / FixedInt10::multiplier() as f32
+
+impl From<FixedInt10> for f32 {
+    fn from(val: FixedInt10) -> f32 {
+        val.value as f32 / FixedInt10::multiplier() as f32
     }
 }
 
