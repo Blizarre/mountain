@@ -66,7 +66,6 @@ impl From<FixedInt10> for u8 {
     }
 }
 
-
 impl From<FixedInt10> for f32 {
     fn from(val: FixedInt10) -> f32 {
         val.value as f32 / FixedInt10::multiplier() as f32
