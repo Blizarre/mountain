@@ -37,7 +37,7 @@ impl HeightMap {
 
     pub fn from_file(path: &str) -> Result<HeightMap, String> {
         match lodepng::decode_file(path, ColorType::GREY, 8) {
-            Err(e) => Err(format!("Error opening the file {} ({})", path, e.0)),
+            Err(e) => Err(format!("Error opening the file {} ({})", path, e)),
             Ok(image) => match image {
                 lodepng::Image::Grey(im) => {
                     if (im.width, im.height) != (1024, 1024) {
@@ -158,7 +158,7 @@ impl Texture {
 
     pub fn from_file(path: &str) -> Result<Texture, String> {
         match lodepng::decode_file(path, ColorType::RGBA, 8) {
-            Err(e) => Err(format!("Error opening the file {} ({})", path, e.0)),
+            Err(e) => Err(format!("Error opening the file {} ({})", path, e)),
             Ok(image) => match image {
                 lodepng::Image::RGBA(im) => {
                     if (im.width, im.height) != (1024, 1024) {

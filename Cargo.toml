@@ -5,8 +5,8 @@ authors = ["Simon M. <git@simon.marache.net>"]
 edition = "2018"
 
 [dependencies]
-sdl = { git = "git://git@github.com/Blizarre/rust-sdl.git" }
-lodepng = "2.5.0"
+sdl = { git = "https://github.com/Blizarre/rust-sdl.git" }
+lodepng = "3.7.0"
 rgb = "0.8.16"
 toml = "0.5.6"
 serde_derive = "1.0.106"
