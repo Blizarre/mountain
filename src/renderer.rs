@@ -42,7 +42,7 @@ pub fn draw(
     let screen_w = screen.get_width() as i32;
     let screen_h = screen.get_height() as i32;
 
-    let pitch = get_pitch(&screen) as usize;
+    let pitch = get_pitch(screen) as usize;
     let sky = RGBA8::new(80, 120, 250, 0);
 
     screen.fill(Color::RGB(sky.r, sky.g, sky.b));

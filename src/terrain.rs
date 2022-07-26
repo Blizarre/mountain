@@ -9,13 +9,13 @@ pub struct Texture(Bitmap<RGBA8>);
 // We hardcode a size of 1024 for the heightmap / texture
 
 impl HeightMap {
-    pub fn get(self: &Self, i: FixedInt10, j: FixedInt10) -> FixedInt10 {
+    pub fn get(&self, i: FixedInt10, j: FixedInt10) -> FixedInt10 {
         let i = Into::<usize>::into(i.floor()) & 1023;
         let j = Into::<usize>::into(j.floor()) & 1023;
         self.0.buffer[i + self.width() * j].0.into()
     }
 
-    pub fn get_interpolate(self: &Self, i: FixedInt10, j: FixedInt10) -> FixedInt10 {
+    pub fn get_interpolate(&self, i: FixedInt10, j: FixedInt10) -> FixedInt10 {
         let i0 = Into::<usize>::into(i.floor()) & 1023;
         let i1 = (i0 + 1) & 1023;
         let i: FixedInt10 = i.fract();
@@ -58,10 +58,10 @@ impl HeightMap {
     }
 
     pub fn from(data: Bitmap<Grey<u8>>) -> HeightMap {
-        HeightMap { 0: data }
+        HeightMap(data)
     }
 
-    pub fn width(self: &Self) -> usize {
+    pub fn width(&self) -> usize {
         1024
     }
 }
@@ -116,7 +116,7 @@ mod tests {
 }
 
 impl Texture {
-    pub fn get(self: &Self, i: FixedInt10, j: FixedInt10) -> RGBA<u8> {
+    pub fn get(&self, i: FixedInt10, j: FixedInt10) -> RGBA<u8> {
         let i = Into::<usize>::into(i) & 1023;
         let j = Into::<usize>::into(j) & 1023;
         self.0.buffer[i + self.width() * j]
@@ -131,7 +131,7 @@ impl Texture {
         }
     }
 
-    pub fn get_interpolate(self: &Self, i: FixedInt10, j: FixedInt10) -> RGBA<u8> {
+    pub fn get_interpolate(&self, i: FixedInt10, j: FixedInt10) -> RGBA<u8> {
         let i0 = Into::<usize>::into(i.floor()) & 1023;
         let i1 = (i0 + 1) & 1023;
         let i: FixedInt10 = i.fract();
@@ -182,7 +182,7 @@ impl Texture {
         Texture(data)
     }
 
-    pub fn width(self: &Self) -> usize {
+    pub fn width(&self) -> usize {
         1024
     }
 }

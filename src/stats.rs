@@ -20,18 +20,18 @@ impl Default for Stats {
 
 impl Stats {
     /// Mark the end of the event and return the time elapsed during this event
-    pub fn end_event(self: &mut Self) -> u32 {
+    pub fn end_event(&mut self) -> u32 {
         let elapsed = self.last_tick.elapsed();
         self.num_events += 1;
         self.total_time += elapsed;
         elapsed.subsec_millis()
     }
 
-    pub fn start_event(self: &mut Self) {
+    pub fn start_event(&mut self) {
         self.last_tick = Instant::now();
     }
 
-    pub fn time<F>(self: &mut Self, mut f: F)
+    pub fn time<F>(&mut self, mut f: F)
     where
         F: FnMut(),
     {
@@ -41,7 +41,7 @@ impl Stats {
         self.num_events += 1;
     }
 
-    pub fn avg_micro(self: &Self) -> f32 {
+    pub fn avg_micro(&self) -> f32 {
         self.total_time.as_micros() as f32 / self.num_events as f32
     }
 }

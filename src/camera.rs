@@ -12,7 +12,7 @@ pub struct Camera {
 }
 
 impl Camera {
-    pub fn update_angle(self: &mut Self, offset: f32) {
+    pub fn update_angle(&mut self, offset: f32) {
         self.angle += offset;
         self.cos_angle = self.angle.cos();
         self.sin_angle = self.angle.sin();
