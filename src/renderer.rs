@@ -71,7 +71,7 @@ pub fn draw(
                 y: (right.y - left.y) / screen_w,
             };
 
-            for i in 0..screen_w as i32 {
+            for i in 0..screen_w {
                 let height_on_hm = if config.enable_filtering && z < 100 {
                     map.get_interpolate(left.x + stride.x * i, left.y + stride.y * i)
                 } else {
