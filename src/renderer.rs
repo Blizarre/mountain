@@ -51,8 +51,7 @@ pub fn draw(
     let scale_height = ((screen_h as f32) * config.scale_height) as i32;
 
     screen.with_lock(|screen_pixels| {
-        let mut max_height = Vec::new();
-        max_height.resize(screen_w as usize, 0);
+        let mut max_height = vec![0; screen_w as usize];
 
         for z in 1..config.distance_max {
             let zf = z as f32;

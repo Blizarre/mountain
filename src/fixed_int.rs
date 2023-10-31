@@ -44,7 +44,7 @@ impl Debug for FixedInt10 {
 
 impl Clone for FixedInt10 {
     fn clone(&self) -> Self {
-        Self { value: self.value }
+        *self
     }
 }
 
